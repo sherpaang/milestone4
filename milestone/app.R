@@ -17,14 +17,32 @@ data <- PPBDS.data::qscores
 view(data)
 # User interface ----
 ui <- fluidPage(
-    titlePanel("Visualization of Number of Enrolles in the top 10
-               departments in Harvard"),
+    titlePanel("Milestone #4 - Ang Sonam Sherpa"),
         mainPanel(
+            
+            
             tabsetPanel(
-                tabPanel("Bar Graph", plotOutput("ggplot"))
-                
-
-            )
+                tabPanel("About", 
+                     h4("Project Update"),
+                     p("I have not gotten too far on my project yet. I am still
+                       mostly trying to decide what exactly I am going to do.
+                       I realized it is rather hard to find a lot of data
+                       concerning Nepal given its lack of technological
+                       advancement. For the milestone due today, I have
+                       collected important data from Wikipedia which will be
+                       useful in the actual project later on."),
+                     h4("Github repo"),
+                     p("https://github.com/sherpaang/milestone4.git")
+                     ),
+            
+                tabPanel("Bar Graph", plotOutput("ggplot")),
+            
+            tabPanel("Discussion",
+                     titlePanel("Discussion Title"),
+                     p("Tour of the modeling choices you made and 
+              an explanation of why you made them"))
+            
+                    )
         )
 )
 
