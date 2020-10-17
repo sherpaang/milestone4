@@ -6,7 +6,7 @@ library(ggplot2)
 # putting population data to pop. I changed all the column types to col_double
 # initially because they were in integers.
 
-pop <- read_csv("milestone/nepalindata.csv", col_type = cols(
+pop <- read_csv("nepalindata.csv", col_type = cols(
     X1 = col_character(),
     `1952` = col_double(),
     `1961` = col_double(),
@@ -33,7 +33,7 @@ pop <- pop %>%
 
 # I did the exact same thing I did for the population with this dataset as well.
 
-hdi <- read_csv("milestone/nepalhdi.csv") %>%
+hdi <- read_csv("nepalhdi.csv") %>%
     slice(2)
 
 # I kept on getting an error where the data would just disappear when I assign
@@ -49,10 +49,10 @@ hdi <- hdi %>%
     pivot_longer(cols = c(`1980`, `1985`, `1990`, `1995`, `2000`, `2001`,
                           `2005`, `2006`, `2010`, `2011`, `2012`, `2013`,
                           `2014`),
-                 names_to = "years",
+                 names_to = "year",
                  values_to = "hdi") %>%
-    mutate(years = as.numeric(years)) %>%
-    select(years, hdi)
+    mutate(year = as.numeric(year)) %>%
+    select(year, hdi)
 
 # User interface ----
 ui <- fluidPage(
@@ -67,8 +67,7 @@ ui <- fluidPage(
                      p("I have not gotten too far on my project yet. I am still
                        mostly trying to decide what exactly I am going to do.
                        I realized it is rather hard to find a lot of data
-                       concerning Nepal given its lack of technological
-                       advancement. For the milestone due today, I have
+                       concerning Nepal. For the milestone due today, I have
                        collected some data regarding the terend of population
                        growth and hdi in Nepal which should be helpful in my
                        final project."),
@@ -77,27 +76,24 @@ ui <- fluidPage(
                      p("https://github.com/sherpaang/milestone4.git")
                      ),
             
-                tabPanel("Graphs", plotOutput("ggplot"))
+                tabPanel("Graphs",
+                         "Population over time", plotOutput("pop"))
             
                     )
         )
 )
 
-?verbatimTextOutput
+glimpse(hdi)
 
 # Server logic ----
 server <- function(input, output) {
-    output$ggplot <- renderPlot({
+    output$pop <- renderPlot({
         
         pop %>%
             ggplot(aes(year, population)) +
             geom_col()
-        
-        hdi %>%
-            ggplot(aes(year, hdi)) +
-            geom_line ()
+    })    
     
-    })
     
 }
 
