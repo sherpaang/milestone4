@@ -1,0 +1,12 @@
+name: milestone4
+title: milestone4
+username:
+account: angsonam
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3036271
+bundleId: 3751127
+url: https://angsonam.shinyapps.io/milestone4/
+when: 1602901659.00133
+asMultiple: FALSE
+asStatic: FALSE

@@ -2,6 +2,10 @@
 library(shiny)
 library(tidyverse)
 library(ggplot2)
+library(dplyr)
+library(patchwork) # To display 2 charts together
+library(hrbrthemes)
+library(ggthemes)
 
 # putting population data to pop. I changed all the column types to col_double
 # initially because they were in integers.
@@ -52,11 +56,13 @@ hdi <- hdi %>%
                  names_to = "year",
                  values_to = "hdi") %>%
     mutate(year = as.numeric(year)) %>%
+    mutate(hdi = as.numeric(hdi)) %>%
     select(year, hdi)
 
 # User interface ----
+
 ui <- fluidPage(
-    titlePanel("Milestone #4 - Ang Sonam Sherpa"),
+    titlePanel("Milestone #5 - Ang Sonam Sherpa"),
         mainPanel(
             
             tabsetPanel(
@@ -64,20 +70,23 @@ ui <- fluidPage(
                 tabPanel("About", 
                      
                      h4("Project Update"),
-                     p("I have not gotten too far on my project yet. I am still
-                       mostly trying to decide what exactly I am going to do.
-                       I realized it is rather hard to find a lot of data
-                       concerning Nepal. For the milestone due today, I have
-                       collected some data regarding the terend of population
-                       growth and hdi in Nepal which should be helpful in my
-                       final project."),
+                     p("I am currently trying to figure out how I will extract
+                       the data that I need from the IPUMS extract I downloaded.
+                       The data is very confusing, and it seems like it will
+                       require a lot of wrangling.
+                       
+                       Since I already had a graph in the previous milestone, I
+                       just resubmitted the same one with a minor change. I
+                       created a graph with both hdi and population for this
+                       milestone."),
                      
                      h4("Github repo"),
                      p("https://github.com/sherpaang/milestone4.git")
                      ),
             
                 tabPanel("Graphs",
-                         "Population over time", plotOutput("pop"))
+                         "Population and HDI over time - Nepal",
+                         plotOutput("data"))
             
                     )
         )
@@ -87,14 +96,34 @@ glimpse(hdi)
 
 # Server logic ----
 server <- function(input, output) {
-    output$pop <- renderPlot({
+    output$data <- renderPlot({
         
-        pop %>%
+        p1 <- pop %>%
             ggplot(aes(year, population)) +
-            geom_col()
-    })    
-    
-    
+            geom_line(color = 'orange', size = 1.5) +
+            ggtitle("Population over time") +
+            scale_y_continuous(
+                breaks = c(5000000, 10000000, 15000000, 20000000,
+                           25000000, 30000000),
+                label = c("5 million", "10 million", "15 million", "20 million",
+                          "25 million", "30 million")) +
+            scale_x_continuous(breaks = c(1950, 1965, 1980, 1995, 2010)) +
+            theme_ipsum()
+        
+        # I found about this function online while looking for ways to create
+        # two y axes. This seems like a far more efficient way of doing so.
+            
+        p2 <- hdi %>%
+            ggplot(aes(year, hdi)) +
+            geom_line(color = "blue",size = 1.5) +
+            ggtitle("HDI over time") +
+            theme_ipsum()
+        
+        # To display both charts side by side
+        
+        p1 + p2
+        
+    })     
 }
 
 # Run app ----
