@@ -1,0 +1,12 @@
+name: milestone5
+title: milestone5
+username:
+account: angsonam
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3077579
+bundleId: 3772527
+url: https://angsonam.shinyapps.io/milestone5/
+when: 1603408966.44598
+asMultiple: FALSE
+asStatic: FALSE

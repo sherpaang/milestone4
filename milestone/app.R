@@ -6,6 +6,7 @@ library(dplyr)
 library(patchwork) # To display 2 charts together
 library(hrbrthemes)
 library(ggthemes)
+library(janitor)
 
 # putting population data to pop. I changed all the column types to col_double
 # initially because they were in integers.
@@ -59,10 +60,36 @@ hdi <- hdi %>%
     mutate(hdi = as.numeric(hdi)) %>%
     select(year, hdi)
 
+
+# putting the data about the trend of gender employment in the Nepali
+# civil service for the last decade.
+
+ncsapplicantstrend <- read.csv("ncstrend2007to2018.csv") %>%
+    clean_names()
+
+
+# data from the academic paper: Nepali women in Politics (page 83)
+
+# constituent assembly refers to the legislative parliament formed to write
+# the final constitution. This was later named the legislative parliament.
+
+electionhistory <- tibble(
+    year = c(1959, 1986, 1991, 1999, 2008, 2013),
+    type = c("parliamentary", "parliamentary", "parliamentary",
+             "parliamentary", "constituent assembly",
+             "constituent assembly"),
+    womencontesting = c(6, NA, NA, NA, NA, NA),
+    totalelected = c(109, 140, 205, 205, 240, 240),
+    womenelected = c(0, 3, 7, 23, 40, 10),
+    localtotal = c(NA, NA, NA, 4146, NA, NA),
+    localwomen = c(NA, NA, NA, 806, NA, NA)
+)
+
+
 # User interface ----
 
 ui <- fluidPage(
-    titlePanel("Milestone #5 - Ang Sonam Sherpa"),
+    titlePanel("Milestone #6 - Ang Sonam Sherpa"),
         mainPanel(
             
             tabsetPanel(
@@ -70,15 +97,17 @@ ui <- fluidPage(
                 tabPanel("About", 
                      
                      h4("Project Update"),
-                     p("I am currently trying to figure out how I will extract
-                       the data that I need from the IPUMS extract I downloaded.
-                       The data is very confusing, and it seems like it will
-                       require a lot of wrangling.
+                     p("I am still looking for datasets currently. I have been
+                      much more successful this week in looking for data. I
+                      still could not find a good way to extract data from a
+                      pdf to a tibble. I decided then to convert the pdf to an
+                      excel file initially online, and then make a new csv file
+                      altogether - which worked out pretty well.
                        
-                       Since I already had a graph in the previous milestone, I
-                       just resubmitted the same one with a minor change. I
-                       created a graph with both hdi and population for this
-                       milestone."),
+                      For the next one, I will look more into finally deciding
+                       what I want to do with the final project ultimately. I
+                       will explore more datasets and see what is possible to be
+                       done in the time remaining."),
                      
                      h4("Github repo"),
                      p("https://github.com/sherpaang/milestone4.git")
@@ -86,7 +115,13 @@ ui <- fluidPage(
             
                 tabPanel("Graphs",
                          "Population and HDI over time - Nepal",
-                         plotOutput("data"))
+                         plotOutput("data")),
+                
+                tabPanel("Nepal Civil Service - new graph",
+                        plotOutput("data2")),
+                
+                tabPanel("Nepal Civil Service - new graph",
+                         plotOutput("data3"))
             
                     )
         )
@@ -123,7 +158,37 @@ server <- function(input, output) {
         
         p1 + p2
         
-    })     
+    })
+    
+    output$data2 <- renderPlot({
+        
+    
+      ncsapplicantstrend %>%
+            ggplot(aes(fiscal_year, total)) +
+            geom_col(fill = "purple") +
+            scale_x_discrete(labels = c(2008:2019)) + 
+            labs(title = "Total Applicants to NCS")
+        
+        
+        })
+    
+    output$data3 <- renderPlot({
+        
+        ncsapplicantstrend %>%
+            select(fiscal_year, female_percent, male_percent) %>%
+            pivot_longer(cols = c(female_percent, male_percent),
+                         names_to = "gender",
+                         values_to = "percent") %>%
+            group_by(fiscal_year, gender) %>%
+            ggplot(aes(fiscal_year, percent, group = gender, color = gender)) +
+            geom_line() +
+            geom_point() +
+            scale_x_discrete(labels = c(2008:2019)) +
+            labs(title = "Trend of Applicants to NCS by Gender")
+        
+    })
+ 
+               
 }
 
 # Run app ----
